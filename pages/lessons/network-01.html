@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1: What is network monitoring? — SecSkills</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../index.html">SECSKILLS</a>
+  <div class="nav-links">
+    <a href="../../index.html">Home</a>
+    <a href="../tracks.html">Tracks</a>
+    <a href="network-01.html" class="active">Lessons</a>
+    <a href="../tracks.html" class="nav-cta">All tracks</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="lesson-layout">
+
+    <!-- Sidebar -->
+    <aside class="lesson-sidebar">
+      <div class="sidebar-track">NETWORK MONITORING</div>
+      <ul class="sidebar-lessons">
+        <li><a href="network-01.html" class="active"><span class="lesson-num">01</span> What is network monitoring? <span class="lesson-check">✓</span></a></li>
+        <li><a href="network-02.html"><span class="lesson-num">02</span> Reading packets with Wireshark</a></li>
+        <li><a href="network-03.html"><span class="lesson-num">03</span> tcpdump on the command line</a></li>
+        <li><a href="#"><span class="lesson-num">04</span> Understanding TCP/IP layers</a></li>
+        <li><a href="#"><span class="lesson-num">05</span> NetFlow and IPFIX basics</a></li>
+        <li><a href="#"><span class="lesson-num">06</span> Setting up SNMP</a></li>
+        <li><a href="#"><span class="lesson-num">07</span> Baselining normal traffic</a></li>
+        <li><a href="#"><span class="lesson-num">08</span> Anomaly detection</a></li>
+        <li><a href="#"><span class="lesson-num">09</span> Grafana + Prometheus setup</a></li>
+        <li><a href="#"><span class="lesson-num">10</span> Writing alert rules</a></li>
+        <li><a href="#"><span class="lesson-num">11</span> Dashboards that actually help</a></li>
+        <li><a href="#"><span class="lesson-num">12</span> Dealing with false positives</a></li>
+        <li><a href="#"><span class="lesson-num">13</span> Incident response basics</a></li>
+        <li><a href="#"><span class="lesson-num">14</span> Track review &amp; certificate</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main content -->
+    <main class="lesson-content">
+      <div class="lesson-header">
+        <div class="lesson-track-tag">NETWORK MONITORING · LESSON 01 OF 14</div>
+        <h1>What is network monitoring?</h1>
+        <div class="lesson-meta">
+          <span><i class="ti ti-clock" style="vertical-align:-2px;"></i> 18 min read</span>
+          <span><i class="ti ti-signal" style="vertical-align:-2px;"></i> Beginner</span>
+          <span><i class="ti ti-code" style="vertical-align:-2px;"></i> No setup required</span>
+        </div>
+      </div>
+
+      <div class="lesson-body">
+
+        <h2>Why monitoring matters</h2>
+        <p>Every device on a network produces a constant stream of traffic. When things are working well, that stream follows predictable patterns — a spike at 9am as people start work, a lull at lunch, another peak mid-afternoon. Network monitoring is the practice of watching that stream and knowing when something breaks the pattern.</p>
+        <p>Without monitoring, you find out about problems from users complaining, or from customers who can't reach your service, or — worst — from a breach report weeks after the fact. With monitoring, you find out from an alert before the impact spreads.</p>
+
+        <div class="callout">
+          <div class="callout-label">KEY IDEA</div>
+          <p>Monitoring isn't just about detecting attacks. Most alerts you'll ever respond to are misconfigurations, hardware failures, or capacity issues — not adversaries. A good monitoring setup catches all of them.</p>
+        </div>
+
+        <h2>The three layers of network monitoring</h2>
+        <p>Network monitoring operates at three different levels of detail, each answering different questions:</p>
+
+        <h3>1. Flow monitoring</h3>
+        <p>Flow data tells you <em>who talked to whom, for how long, and how much data moved</em>. It doesn't contain the contents of conversations — just the metadata. Think of it like a phone bill: you see the numbers dialed and call duration, but not what was said.</p>
+        <p>Flow protocols include <code>NetFlow</code> (Cisco), <code>IPFIX</code> (the open standard), and <code>sFlow</code>. Most enterprise routers and switches can export this data to a collector.</p>
+
+        <h3>2. Packet capture</h3>
+        <p>Packet capture (PCAP) gives you the full contents of every packet on the wire. This is the most detailed view — you can reconstruct entire conversations, extract files, and see exactly what was transmitted. The trade-off is volume: a 1Gbps link generates roughly 450GB of PCAPs per hour.</p>
+        <p>Tools: <code>Wireshark</code> (GUI), <code>tcpdump</code> (CLI), <code>tshark</code> (CLI with Wireshark's dissectors).</p>
+
+        <h3>3. Device metrics</h3>
+        <p>CPU load, interface error rates, memory usage, BGP peer states — these come from the devices themselves via <code>SNMP</code>, <code>NETCONF</code>, or streaming telemetry. They tell you about the health of your infrastructure rather than the traffic flowing through it.</p>
+
+        <h2>What does "normal" look like?</h2>
+        <p>You can't detect abnormal without first understanding normal. For a typical corporate network, normal might include:</p>
+        <ul>
+          <li>DNS queries going to your internal resolvers (e.g. <code>10.0.0.1</code>), not to external IPs</li>
+          <li>Web traffic on ports <code>80</code> and <code>443</code> through a proxy</li>
+          <li>Workstation-to-server traffic, but not workstation-to-workstation (lateral movement is a red flag)</li>
+          <li>Mail flow in and out of your MX servers</li>
+          <li>Backup jobs running between midnight and 4am</li>
+        </ul>
+        <p>Anything that deviates from this baseline deserves a look. A workstation querying a DNS server in another country at 3am is a textbook indicator of a C2 (command-and-control) beacon.</p>
+
+        <div class="callout warn">
+          <div class="callout-label">COMMON MISTAKE</div>
+          <p>Don't try to alert on everything unusual from day one. You'll drown in noise. Start by baselining for two weeks, then write your first three or four high-confidence alerts before expanding.</p>
+        </div>
+
+        <h2>A simple monitoring stack</h2>
+        <p>Here's a minimal stack that covers all three layers for a small network:</p>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-lang">STACK OVERVIEW</span>
+          </div>
+          <pre><span class="cm"># Flow collection</span>
+Router → exports NetFlow → <span class="fn">ntopng</span> or <span class="fn">Elastiflow</span>
+
+<span class="cm"># Packet capture (on a mirror/SPAN port)</span>
+Network tap → <span class="fn">tcpdump</span> → PCAP storage
+            → <span class="fn">Zeek</span>    → structured logs → SIEM
+
+<span class="cm"># Device metrics</span>
+Devices → SNMP poll → <span class="fn">Prometheus</span> + <span class="fn">SNMP Exporter</span>
+        → <span class="fn">Grafana</span> for dashboards</pre>
+        </div>
+
+        <p>In later lessons we'll set up each of these components. For now, the important thing is understanding what each layer is <em>for</em> — and that you don't need all three from day one.</p>
+
+        <h2>Quick wins to implement today</h2>
+        <p>If you manage a network right now and want to start immediately, here are three things you can do without any new tooling:</p>
+        <ol>
+          <li><strong>Enable logging on your firewall.</strong> Even if you're not collecting centrally yet, firewall logs are the most valuable single source of truth about what's entering and leaving your network.</li>
+          <li><strong>Check your DNS logs.</strong> Most routers and firewalls log DNS queries. Look for queries to newly-registered domains or domains with high entropy in the name (a sign of domain-generation algorithms).</li>
+          <li><strong>Run <code>netstat -an</code> on your servers.</strong> Check for unexpected listening ports or connections to unfamiliar external IPs. Takes two minutes and has caught real intrusions.</li>
+        </ol>
+
+        <!-- Quiz -->
+        <div class="quiz-block" id="quiz1">
+          <div class="quiz-q">Which monitoring layer tells you <em>who talked to whom</em> without capturing packet contents?</div>
+          <div class="quiz-options">
+            <button class="quiz-option">Packet capture (PCAP)</button>
+            <button class="quiz-option">Flow monitoring (NetFlow/IPFIX)</button>
+            <button class="quiz-option">SNMP device metrics</button>
+            <button class="quiz-option">Firewall rule logs</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="lesson-nav">
+          <span style="color:var(--text3);font-size:13px;">← Start of track</span>
+          <a href="network-02.html" class="btn btn-primary">Next: Reading packets with Wireshark →</a>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">SECSKILLS — open source security education</span>
+      <div class="footer-links">
+        <a href="../tracks.html">Tracks</a>
+        <a href="https://github.com/" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => initQuiz('quiz1', 1));
+</script>
+</body>
+</html>

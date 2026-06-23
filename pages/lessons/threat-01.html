@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1: Threat detection fundamentals — SecSkills</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../index.html">SECSKILLS</a>
+  <div class="nav-links">
+    <a href="../../index.html">Home</a>
+    <a href="../tracks.html">Tracks</a>
+    <a href="threat-01.html" class="active">Lessons</a>
+    <a href="../tracks.html" class="nav-cta">All tracks</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="lesson-layout">
+
+    <aside class="lesson-sidebar">
+      <div class="sidebar-track">THREAT DETECTION</div>
+      <ul class="sidebar-lessons">
+        <li><a href="threat-01.html" class="active"><span class="lesson-num">01</span> Threat detection fundamentals</a></li>
+        <li><a href="#"><span class="lesson-num">02</span> Log sources and collection</a></li>
+        <li><a href="#"><span class="lesson-num">03</span> Introduction to SIEM</a></li>
+        <li><a href="#"><span class="lesson-num">04</span> Writing Sigma rules</a></li>
+        <li><a href="#"><span class="lesson-num">05</span> MITRE ATT&amp;CK framework</a></li>
+        <li><a href="#"><span class="lesson-num">06</span> Correlating events across logs</a></li>
+        <li><a href="#"><span class="lesson-num">07</span> Alert triage process</a></li>
+        <li><a href="#"><span class="lesson-num">08</span> Indicators of compromise</a></li>
+        <li><a href="#"><span class="lesson-num">09</span> Detecting lateral movement</a></li>
+        <li><a href="#"><span class="lesson-num">10</span> C2 beacon detection</a></li>
+        <li><a href="#"><span class="lesson-num">11</span> Endpoint telemetry with EDR</a></li>
+        <li><a href="#"><span class="lesson-num">12</span> Tuning to reduce false positives</a></li>
+        <li><a href="#"><span class="lesson-num">13</span> Threat hunting basics</a></li>
+        <li><a href="#"><span class="lesson-num">14</span> Track review &amp; certificate</a></li>
+      </ul>
+    </aside>
+
+    <main class="lesson-content">
+      <div class="lesson-header">
+        <div class="lesson-track-tag" style="color:var(--coral);">THREAT DETECTION · LESSON 01 OF 14</div>
+        <h1>Threat detection fundamentals</h1>
+        <div class="lesson-meta">
+          <span><i class="ti ti-clock" style="vertical-align:-2px;"></i> 20 min read</span>
+          <span><i class="ti ti-signal" style="vertical-align:-2px;"></i> Advanced</span>
+          <span><i class="ti ti-code" style="vertical-align:-2px;"></i> No setup required</span>
+        </div>
+      </div>
+
+      <div class="lesson-body">
+
+        <h2>Detection vs prevention</h2>
+        <p>Security teams often talk about prevention — firewalls, patching, access controls — as the primary goal. But no prevention is perfect. Threat detection is the discipline that answers: <em>when prevention fails, how quickly do we know?</em></p>
+        <p>The industry benchmark is mean time to detect (MTTD) and mean time to respond (MTTR). In 2023, the median time for organizations to detect a breach was around 16 days. With good detection engineering, that can drop to minutes.</p>
+
+        <h2>What are we looking for?</h2>
+        <p>Threats leave traces. These traces fall into two broad categories:</p>
+
+        <h3>Indicators of Compromise (IoCs)</h3>
+        <p>IoCs are specific artifacts that indicate a system has been compromised. They include:</p>
+        <ul>
+          <li>Known malicious IP addresses or domains</li>
+          <li>File hashes matching known malware</li>
+          <li>Specific registry keys created by malware</li>
+          <li>Unusual process names or paths</li>
+        </ul>
+        <p>IoCs are the easiest to detect but also the easiest for attackers to change. A threat actor can rotate their C2 IP in minutes.</p>
+
+        <h3>Tactics, Techniques, and Procedures (TTPs)</h3>
+        <p>TTPs describe <em>how</em> attackers operate — the patterns of behavior that make up an attack. These are much harder to change. Even if an attacker switches their C2 IP, they still need to establish persistence, move laterally, and exfiltrate data — and those behaviors follow predictable patterns.</p>
+        <p>The <strong>MITRE ATT&CK framework</strong> (covered in lesson 5) is the industry-standard catalog of TTPs used by real threat actors.</p>
+
+        <div class="callout">
+          <div class="callout-label">KEY IDEA</div>
+          <p>Detecting TTPs rather than IoCs is harder to build but far more durable. An attacker can change their tools overnight. They can't easily change how they think about achieving their objectives.</p>
+        </div>
+
+        <h2>The detection pipeline</h2>
+        <p>Raw logs are unusable at scale. A detection pipeline transforms them into actionable alerts:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">DETECTION PIPELINE</span></div>
+          <pre><span class="cm">1. Collection</span>    Log sources → log shipper (Filebeat, Fluentd)
+                          ↓
+<span class="cm">2. Ingestion</span>     SIEM or data lake (Splunk, Elastic, Chronicle)
+                          ↓
+<span class="cm">3. Normalization</span> Parse and enrich raw logs → structured events
+                          ↓
+<span class="cm">4. Detection</span>     Rules run against events → alerts
+                          ↓
+<span class="cm">5. Triage</span>        Analyst reviews alerts → true/false positive
+                          ↓
+<span class="cm">6. Response</span>      Contain, investigate, remediate</pre>
+        </div>
+
+        <h2>Signal vs noise</h2>
+        <p>The biggest practical challenge in threat detection isn't writing rules — it's keeping the false positive rate low enough that analysts don't develop "alert fatigue" and start ignoring everything.</p>
+        <p>A well-tuned detection should have a signal-to-noise ratio where the vast majority of alerts are genuine. Getting there requires:</p>
+        <ul>
+          <li>Starting with high-confidence, low-volume detections</li>
+          <li>Baselining normal behavior before alerting on deviations</li>
+          <li>Adding context (asset criticality, user role) to prioritize</li>
+          <li>Continuous tuning based on analyst feedback</li>
+        </ul>
+
+        <div class="callout warn">
+          <div class="callout-label">ANTI-PATTERN</div>
+          <p>Don't try to detect everything at once. A team drowning in 10,000 alerts a day that they can't triage is worse than a team with 20 high-quality alerts. Quality over quantity, always.</p>
+        </div>
+
+        <h2>Your first three detections</h2>
+        <p>If you're starting from scratch, here are three high-confidence, high-value detections to implement first:</p>
+        <ol>
+          <li><strong>Failed login bursts</strong> — more than 10 failed logins for a single account in 5 minutes. Catches password spraying and brute force.</li>
+          <li><strong>New admin account creation</strong> — any new user added to an admin group outside of your change window. Privilege escalation is a critical step in most attacks.</li>
+          <li><strong>Outbound connection to newly-registered domain</strong> — domains registered within the last 30 days are a common C2 indicator. Most legitimate services use established domains.</li>
+        </ol>
+
+        <!-- Quiz -->
+        <div class="quiz-block" id="quiz-th1">
+          <div class="quiz-q">Which type of threat indicator is harder for attackers to change and why?</div>
+          <div class="quiz-options">
+            <button class="quiz-option">IoCs — because they're specific file hashes</button>
+            <button class="quiz-option">IP addresses — because attackers can't get new ones easily</button>
+            <button class="quiz-option">TTPs — because they describe how attackers behave, which is harder to change than tools</button>
+            <button class="quiz-option">Domain names — because registering new ones takes time</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="lesson-nav">
+          <a href="../tracks.html" class="btn btn-ghost">← Back to tracks</a>
+          <a href="#" class="btn btn-primary">Next: Log sources →</a>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">SECSKILLS — open source security education</span>
+      <div class="footer-links">
+        <a href="../tracks.html">Tracks</a>
+        <a href="https://github.com/" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => initQuiz('quiz-th1', 2));
+</script>
+</body>
+</html>

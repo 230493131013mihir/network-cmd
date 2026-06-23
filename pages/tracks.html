@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Tracks — SecSkills</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">SECSKILLS</a>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="tracks.html" class="active">Tracks</a>
+    <a href="lessons/network-01.html">Lessons</a>
+    <a href="tracks.html" class="nav-cta">Start learning</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="tracks-hero">
+    <div class="section-eyebrow">ALL TRACKS</div>
+    <h1 class="section-title">Choose your track</h1>
+    <p class="section-sub">Each track is a structured path from fundamentals to applied skills. Start anywhere — every lesson stands alone.</p>
+  </div>
+
+  <div class="tracks-grid">
+
+    <!-- Network Monitoring -->
+    <div id="network">
+      <a href="lessons/network-01.html" class="track-card">
+        <div class="track-header">
+          <div class="track-icon-row">
+            <div class="track-icon teal"><i class="ti ti-topology-star"></i></div>
+            <span class="track-level beginner">BEGINNER</span>
+          </div>
+          <h2>Network monitoring</h2>
+          <p>Understand what normal traffic looks like, so you can catch what isn't. Covers packet capture, flow analysis, protocol basics, and dashboards.</p>
+        </div>
+        <ul class="track-lessons">
+          <li><span>01</span> What is network monitoring?</li>
+          <li><span>02</span> Reading packets with Wireshark</li>
+          <li><span>03</span> tcpdump on the command line</li>
+          <li><span>04</span> Understanding TCP/IP layers</li>
+          <li><span>05</span> NetFlow and IPFIX basics</li>
+          <li><span>06</span> Setting up SNMP</li>
+          <li><span>07</span> Baselining normal traffic</li>
+          <li><span>···</span> <em style="color:var(--text3);">7 more lessons</em></li>
+        </ul>
+        <div class="track-footer">
+          <span class="track-stats">14 lessons · 4h · Certificate</span>
+          <span class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Start track →</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Firewall -->
+    <div id="firewall">
+      <a href="lessons/firewall-01.html" class="track-card">
+        <div class="track-header">
+          <div class="track-icon-row">
+            <div class="track-icon purple"><i class="ti ti-shield-lock"></i></div>
+            <span class="track-level intermediate">INTERMEDIATE</span>
+          </div>
+          <h2>Firewall configuration</h2>
+          <p>Learn how firewalls make decisions, how to write clean rule sets, and how to audit an existing policy for gaps and bloat.</p>
+        </div>
+        <ul class="track-lessons">
+          <li><span>01</span> How firewalls work</li>
+          <li><span>02</span> Stateful vs stateless filtering</li>
+          <li><span>03</span> iptables fundamentals</li>
+          <li><span>04</span> Writing your first rule set</li>
+          <li><span>05</span> Rule order and short-circuiting</li>
+          <li><span>06</span> Introduction to nftables</li>
+          <li><span>07</span> NAT and port forwarding</li>
+          <li><span>···</span> <em style="color:var(--text3);">6 more lessons</em></li>
+        </ul>
+        <div class="track-footer">
+          <span class="track-stats">13 lessons · 4h · Certificate</span>
+          <span class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Start track →</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Threat Detection -->
+    <div id="threat">
+      <a href="lessons/threat-01.html" class="track-card">
+        <div class="track-header">
+          <div class="track-icon-row">
+            <div class="track-icon coral"><i class="ti ti-radar"></i></div>
+            <span class="track-level advanced">ADVANCED</span>
+          </div>
+          <h2>Threat detection</h2>
+          <p>Move from raw log data to actionable alerts. Covers SIEM ingestion, Sigma rule writing, MITRE ATT&CK mapping, and triage workflows.</p>
+        </div>
+        <ul class="track-lessons">
+          <li><span>01</span> Threat detection fundamentals</li>
+          <li><span>02</span> Log sources and collection</li>
+          <li><span>03</span> Introduction to SIEM</li>
+          <li><span>04</span> Writing Sigma rules</li>
+          <li><span>05</span> MITRE ATT&CK framework</li>
+          <li><span>06</span> Correlating events across logs</li>
+          <li><span>07</span> Alert triage process</li>
+          <li><span>···</span> <em style="color:var(--text3);">7 more lessons</em></li>
+        </ul>
+        <div class="track-footer">
+          <span class="track-stats">14 lessons · 4h · Certificate</span>
+          <span class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Start track →</span>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">SECSKILLS — open source security education</span>
+      <div class="footer-links">
+        <a href="tracks.html">Tracks</a>
+        <a href="https://github.com/" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

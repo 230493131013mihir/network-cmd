@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3: tcpdump on the command line — SecSkills</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../../index.html">SECSKILLS</a>
+  <div class="nav-links">
+    <a href="../../index.html">Home</a>
+    <a href="../tracks.html">Tracks</a>
+    <a href="network-01.html" class="active">Lessons</a>
+    <a href="../tracks.html" class="nav-cta">All tracks</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="lesson-layout">
+
+    <aside class="lesson-sidebar">
+      <div class="sidebar-track">NETWORK MONITORING</div>
+      <ul class="sidebar-lessons">
+        <li><a href="network-01.html"><span class="lesson-num">01</span> What is network monitoring? <span class="lesson-check">✓</span></a></li>
+        <li><a href="network-02.html"><span class="lesson-num">02</span> Reading packets with Wireshark <span class="lesson-check">✓</span></a></li>
+        <li><a href="network-03.html" class="active"><span class="lesson-num">03</span> tcpdump on the command line</a></li>
+        <li><a href="#"><span class="lesson-num">04</span> Understanding TCP/IP layers</a></li>
+        <li><a href="#"><span class="lesson-num">05</span> NetFlow and IPFIX basics</a></li>
+        <li><a href="#"><span class="lesson-num">06</span> Setting up SNMP</a></li>
+        <li><a href="#"><span class="lesson-num">07</span> Baselining normal traffic</a></li>
+        <li><a href="#"><span class="lesson-num">08</span> Anomaly detection</a></li>
+        <li><a href="#"><span class="lesson-num">09</span> Grafana + Prometheus setup</a></li>
+        <li><a href="#"><span class="lesson-num">10</span> Writing alert rules</a></li>
+        <li><a href="#"><span class="lesson-num">11</span> Dashboards that actually help</a></li>
+        <li><a href="#"><span class="lesson-num">12</span> Dealing with false positives</a></li>
+        <li><a href="#"><span class="lesson-num">13</span> Incident response basics</a></li>
+        <li><a href="#"><span class="lesson-num">14</span> Track review &amp; certificate</a></li>
+      </ul>
+    </aside>
+
+    <main class="lesson-content">
+      <div class="lesson-header">
+        <div class="lesson-track-tag">NETWORK MONITORING · LESSON 03 OF 14</div>
+        <h1>tcpdump on the command line</h1>
+        <div class="lesson-meta">
+          <span><i class="ti ti-clock" style="vertical-align:-2px;"></i> 20 min read</span>
+          <span><i class="ti ti-signal" style="vertical-align:-2px;"></i> Beginner</span>
+          <span><i class="ti ti-terminal-2" style="vertical-align:-2px;"></i> Linux / macOS terminal</span>
+        </div>
+      </div>
+
+      <div class="lesson-body">
+
+        <h2>Why tcpdump?</h2>
+        <p>Wireshark is excellent when you have a GUI. On a headless server — which is where most interesting traffic lives — you need <code>tcpdump</code>. It's almost universally available, ships with most Linux and macOS systems, and is nearly identical in syntax to Wireshark's capture filters (both use BPF — Berkeley Packet Filter).</p>
+        <p>The workflow is typically: capture with <code>tcpdump</code> on a remote server, copy the <code>.pcap</code> file to your workstation, open in Wireshark for detailed analysis.</p>
+
+        <h2>Basic syntax</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">BASH</span></div>
+          <pre><span class="cm"># List available interfaces</span>
+<span class="fn">sudo</span> tcpdump -D
+
+<span class="cm"># Capture on eth0, print to screen</span>
+<span class="fn">sudo</span> tcpdump -i eth0
+
+<span class="cm"># Capture on eth0, save to file</span>
+<span class="fn">sudo</span> tcpdump -i eth0 -w capture.pcap
+
+<span class="cm"># Capture 100 packets then stop</span>
+<span class="fn">sudo</span> tcpdump -i eth0 -c <span class="num">100</span>
+
+<span class="cm"># Don't resolve hostnames (faster, avoids DNS leakage)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 -n
+
+<span class="cm"># More verbose output (-v, -vv, -vvv)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 -v</pre>
+        </div>
+
+        <h2>Filtering traffic</h2>
+        <p>Filters go at the end of the command, after the options. They use BPF syntax:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">BASH — COMMON FILTERS</span></div>
+          <pre><span class="cm"># Only port 443 (HTTPS)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 port <span class="num">443</span>
+
+<span class="cm"># Traffic to or from a specific host</span>
+<span class="fn">sudo</span> tcpdump -i eth0 host <span class="num">10.0.0.5</span>
+
+<span class="cm"># Traffic from a specific source</span>
+<span class="fn">sudo</span> tcpdump -i eth0 src <span class="num">10.0.0.5</span>
+
+<span class="cm"># Combine filters with 'and', 'or', 'not'</span>
+<span class="fn">sudo</span> tcpdump -i eth0 host <span class="num">10.0.0.5</span> and port <span class="num">80</span>
+
+<span class="cm"># Everything except SSH (avoids capturing your own session)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 not port <span class="num">22</span>
+
+<span class="cm"># Only TCP SYN packets (connection attempts)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 'tcp[tcpflags] & tcp-syn != 0 and tcp[tcpflags] & tcp-ack == 0'
+
+<span class="cm"># Capture DNS queries only</span>
+<span class="fn">sudo</span> tcpdump -i eth0 port <span class="num">53</span></pre>
+        </div>
+
+        <h2>Practical: capture and rotate files</h2>
+        <p>On a busy interface you don't want one enormous PCAP file. Use <code>-G</code> (rotate every N seconds) and <code>-W</code> (keep only N files) to create a rolling capture:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">BASH</span></div>
+          <pre><span class="cm"># Rotate every 300 seconds, keep 12 files (1 hour of rolling capture)</span>
+<span class="fn">sudo</span> tcpdump -i eth0 \
+  -w /var/captures/capture_%Y%m%d_%H%M%S.pcap \
+  -G <span class="num">300</span> \
+  -W <span class="num">12</span> \
+  not port <span class="num">22</span></pre>
+        </div>
+
+        <h2>Reading a saved PCAP file</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">BASH</span></div>
+          <pre><span class="cm"># Read from file instead of live interface</span>
+<span class="fn">sudo</span> tcpdump -r capture.pcap
+
+<span class="cm"># Read and apply a display filter</span>
+<span class="fn">sudo</span> tcpdump -r capture.pcap port <span class="num">80</span>
+
+<span class="cm"># Print full packet contents in ASCII</span>
+<span class="fn">sudo</span> tcpdump -r capture.pcap -A
+
+<span class="cm"># Print in hex and ASCII</span>
+<span class="fn">sudo</span> tcpdump -r capture.pcap -XX</pre>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">PRO TIP</div>
+          <p>Pipe <code>tcpdump</code> output through <code>grep</code> for quick searches: <code>sudo tcpdump -i eth0 -A port 80 | grep "Host:"</code> shows the HTTP Host header of every request, revealing which domains are being accessed.</p>
+        </div>
+
+        <h2>Transferring captures to Wireshark</h2>
+        <p>After capturing on a remote server, pull the file to your local machine with <code>scp</code> and open in Wireshark:</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-lang">BASH</span></div>
+          <pre><span class="cm"># Copy capture from remote server to your local machine</span>
+<span class="fn">scp</span> user@server:/var/captures/capture.pcap ~/Desktop/
+
+<span class="cm"># Then open in Wireshark from the command line</span>
+<span class="fn">wireshark</span> ~/Desktop/capture.pcap &</pre>
+        </div>
+
+        <!-- Quiz -->
+        <div class="quiz-block" id="quiz3">
+          <div class="quiz-q">Which tcpdump flag saves captured packets to a file instead of printing to screen?</div>
+          <div class="quiz-options">
+            <button class="quiz-option"><code>-r</code></button>
+            <button class="quiz-option"><code>-n</code></button>
+            <button class="quiz-option"><code>-w</code></button>
+            <button class="quiz-option"><code>-v</code></button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="lesson-nav">
+          <a href="network-02.html" class="btn btn-ghost">← Lesson 02</a>
+          <a href="../tracks.html" class="btn btn-primary">Back to track →</a>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">SECSKILLS — open source security education</span>
+      <div class="footer-links">
+        <a href="../tracks.html">Tracks</a>
+        <a href="https://github.com/" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => initQuiz('quiz3', 2));
+</script>
+</body>
+</html>
