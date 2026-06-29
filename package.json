@@ -1,0 +1,16 @@
+{
+  "name": "network-cmd",
+  "version": "1.0.0",
+  "description": "Network CMD Tool by Mihir Jadav",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'No build needed'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
